@@ -24,3 +24,18 @@ Route::group(['prefix' => 'auth'] , function () {
     Route::post('register' , 'AuthorizationController@register');
     Route::get('user-list' , 'AuthorizationController@getUserLogin')->middleware('jwt');
 });
+
+Route::group(['prefix' => 'product'] , function () {
+    Route::get('' , 'AuthorizationController@getUserLogin');
+    Route::get('/:product_id' , 'AuthorizationController@getUserLogin');
+    Route::post('add' , 'AuthorizationController@login');
+    Route::post('edit/:product_id' , 'AuthorizationController@register');
+    Route::delete('/:product_id' , 'AuthorizationController@getUserLogin')->middleware('jwt');
+});
+
+Route::group(['prefix' => 'order'] , function () {
+    Route::get('' , 'AuthorizationController@getUserLogin');
+    Route::get('/:order_id' , 'AuthorizationController@getUserLogin');
+    Route::post('checkout' , 'AuthorizationController@login');
+    Route::delete('/:order_id' , 'AuthorizationController@getUserLogin')->middleware('jwt');
+});
