@@ -22,4 +22,5 @@ Route::group(['prefix' => 'auth'] , function () {
     Route::get('user' , 'AuthorizationController@getUserLogin')->middleware('jwt');
     Route::post('login' , 'AuthorizationController@login');
     Route::post('register' , 'AuthorizationController@register');
+    Route::get('user-list' , 'AuthorizationController@getUserLogin')->middleware('jwt');
 });

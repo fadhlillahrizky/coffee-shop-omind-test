@@ -2,6 +2,7 @@
 
 
 namespace App\Models;
+use App\Entities\ResponseEntities;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -36,6 +37,19 @@ class User extends Authenticatable implements JWTSubject
     public function getJWTCustomClaims()
     {
         return [];
+    }
+
+    public static function listUser()
+    {
+        $response = new ResponseEntities();
+
+        $user = self::get();
+
+        $response->success = true;
+        $response->message = 'List User';
+        $response->data = $user;
+
+        return $response;
     }
 }
 

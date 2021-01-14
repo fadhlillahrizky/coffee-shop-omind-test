@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Entities\ResponseEntities;
-use App\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -12,31 +12,51 @@ use Tymon\JWTAuth\Exceptions\JWTException;
 
 class AuthorizationController extends Controller
 {
-    public function login(Request $request)
+    public function login(Request $request): ResponseEntities
     {
+        $response = new ResponseEntities();
+
         $credentials = $request->only('email', 'password');
 
         try {
-            if (! $token = JWTAuth::attempt($credentials)) {
-                return response()->json(['error' => 'invalid_credentials'], 400);
+            if (!$token = JWTAuth::attempt($credentials)) {
+                $response->message = 'Login failed, Token attemp';
+                return $response;
             }
         } catch (JWTException $e) {
-            return response()->json(['error' => 'could_not_create_token'], 500);
+            $response->message = 'Log Authorization login';
+            $response->data = [
+                'credentials' => $credentials ,
+                'data' => $e
+            ];
         }
 
-        return response()->json(compact('token'));
+        $user = JWTAuth::parseToken()->authenticate();
+
+        $response->success = true;
+        $response->message = 'Detail User';
+        $response->data = [
+            'token' => $token,
+            'user' => $user
+        ];
+
+        return $response;
     }
 
-    public function register(Request $request)
+    public function register(Request $request): ResponseEntities
     {
+        $response = new ResponseEntities();
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
 
-        if($validator->fails()){
-            return response()->json($validator->errors()->toJson(), 400);
+        if ($validator->fails()) {
+            $response->message = 'Param tidak sesuai';
+            $response->data = $validator->errors();
+            return $response;
         }
 
         $user = User::create([
@@ -47,14 +67,23 @@ class AuthorizationController extends Controller
 
         $token = JWTAuth::fromUser($user);
 
-        return response()->json(compact('user','token'),201);
+        $response->success = true;
+        $response->message = 'Detail User';
+        $response->data = [
+            'token' => $token,
+            'user' => $user
+        ];
+
+        return $response;
     }
 
     public function getAuthenticatedUser()
     {
+        $response = new ResponseEntities();
+
         try {
 
-            if (! $user = JWTAuth::parseToken()->authenticate()) {
+            if (!$user = JWTAuth::parseToken()->authenticate()) {
                 return response()->json(['user_not_found'], 404);
             }
 
@@ -72,7 +101,9 @@ class AuthorizationController extends Controller
 
         }
 
-        return response()->json(compact('user'));
+        $response->success = true;
+        $response->message = 'Detail User';
+        $response->data = $user;
     }
 
     public function getUserLogin()
@@ -81,8 +112,15 @@ class AuthorizationController extends Controller
 
         $response->success = true;
         $response->message = 'Detail User';
+        $response->data = JWTAuth::parseToken()->authenticate();
 
         return $response;
+    }
+
+
+    public function listUser()
+    {
+        return User::listUser();
     }
 
 }

@@ -27,12 +27,6 @@ class VerifyJWTToken
                 return error(401, 'Token tidak valid. Silahkan login kembali.', '01');
             }
 
-            // check banned users
-            if (!empty($user->banner) && $user->banned) {
-                JWTAuth::invalidate($token);
-                return error(401, __('messages.authorizations.ccount_banned', ['reason' => $user->ban_reason]), '03');
-            }
-
         } catch (JWTException $e) {
 
             if ($e instanceof TokenExpiredException) {
