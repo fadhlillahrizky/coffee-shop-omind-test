@@ -4,27 +4,34 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use JWTAuth;
 
 class OrderController extends Controller
 {
 
     public static function checkout(Request $request)
     {
-        return Order::checkout($request->input());
+        $user = JWTAuth::parseToken()->authenticate();
+        $payload = $request->input();
+        $payload['order_by'] = $user->id;
+        return Order::checkout($payload);
     }
 
     public static function getOrderList(Request $request)
     {
-        return Order::getOrderList($request->query());
+        $user = JWTAuth::parseToken()->authenticate();
+        return Order::getOrderList($request->query(), $user);
     }
 
     public static function getOrder(Request $request, $orderId)
     {
-        return Order::getOrder($orderId);
+        $user = JWTAuth::parseToken()->authenticate();
+        return Order::getOrder($orderId, $user);
     }
 
     public static function deleteOrder(Request $request, $orderId)
     {
-        return Order::deleteOrder($orderId);
+        $user = JWTAuth::parseToken()->authenticate();
+        return Order::deleteOrder($orderId, $user);
     }
 }

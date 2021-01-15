@@ -14,6 +14,12 @@ class Order extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'order_by',
+        'table_no',
+        'total_price'
+    ];
+
 
     /**
      * @return HasMany
@@ -33,11 +39,12 @@ class Order extends Model
 
         $products = Product::whereIn('id', $productIds)
             ->get()
-            ->pluck(['product_id' => 'price']);
+            ->pluck('price', 'id');
 
         $total =  0;
+
         foreach ($orderItems as $orderItem) {
-            $total += $orderItem->qty * $products[$orderItem->product_id];
+            $total += $orderItem['qty'] * $products[$orderItem['product_id']];
         }
 
         $order = self::create([
@@ -50,8 +57,8 @@ class Order extends Model
         foreach ($orderItems as $orderItem) {
             OrderDetail::create([
                'order_id' => $order->id,
-               'product_id' => $orderItem->product_id,
-               'qty' => $orderItem->qty
+               'product_id' => $orderItem['product_id'],
+               'qty' => $orderItem['qty']
             ]);
         }
 
@@ -62,11 +69,12 @@ class Order extends Model
         return $response;
     }
 
-    public static function getOrderList($queryString): ResponseEntities
+    public static function getOrderList(array $queryString, $userInfo): ResponseEntities
     {
         $response = new ResponseEntities();
 
-        $orders = self::with('order_items')
+        $orders = self::with('orderItems')
+            ->where('order_by', $userInfo->id)
             ->get();//TODO: add filter and sort
 
         $response->success = true;
@@ -76,11 +84,12 @@ class Order extends Model
         return $response;
     }
 
-    public static function getOrder($orderId): ResponseEntities
+    public static function getOrder($orderId, $userInfo): ResponseEntities
     {
         $response = new ResponseEntities();
 
-        $order = self::with('order_items')
+        $order = self::with('orderItems')
+            ->where('order_by', $userInfo->id)
             ->where('id', $orderId)
             ->first();
 
@@ -97,14 +106,14 @@ class Order extends Model
         return $response;
     }
 
-    public static function deleteOrder($orderId): ResponseEntities
+    public static function deleteOrder($orderId, $userInfo): ResponseEntities
     {
         $response = new ResponseEntities();
 
         $order = self::where('id', $orderId)->delete();
 
-        if ($order === null){
-            $response->message = 'Product not found';
+        if ($order === 0){
+            $response->message = 'Order not found';
 
             return $response;
         }

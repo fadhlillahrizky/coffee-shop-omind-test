@@ -19,23 +19,23 @@ use Illuminate\Support\Facades\Route;
 //});
 
 Route::group(['prefix' => 'auth'] , function () {
-    Route::get('user' , 'AuthorizationController@getUserLogin')->middleware('jwt');
+    Route::get('user' , 'AuthorizationController@getUserLogin')->middleware('jwt.verify');
     Route::post('login' , 'AuthorizationController@login');
     Route::post('register' , 'AuthorizationController@register');
-    Route::get('user-list' , 'AuthorizationController@getUserLogin')->middleware('jwt');
+    Route::get('user-list' , 'AuthorizationController@getUserLogin')->middleware('jwt.verify');
 });
 
 Route::group(['prefix' => 'product'] , function () {
-    Route::get('' , 'AuthorizationController@getUserLogin');
-    Route::get('/:product_id' , 'AuthorizationController@getUserLogin');
-    Route::post('add' , 'AuthorizationController@login');
-    Route::post('edit/:product_id' , 'AuthorizationController@register');
-    Route::delete('/:product_id' , 'AuthorizationController@getUserLogin')->middleware('jwt');
+    Route::get('' , 'ProductController@getProductList');
+    Route::get('/{product_id}' , 'ProductController@getProduct');
+    Route::post('add' , 'ProductController@addProduct')->middleware('jwt.verify');
+    Route::post('edit/{product_id}' , 'ProductController@editProduct')->middleware('jwt.verify');
+    Route::delete('/{product_id}' , 'ProductController@deleteProduct')->middleware('jwt.verify');
 });
 
 Route::group(['prefix' => 'order'] , function () {
-    Route::get('' , 'AuthorizationController@getUserLogin');
-    Route::get('/:order_id' , 'AuthorizationController@getUserLogin');
-    Route::post('checkout' , 'AuthorizationController@login');
-    Route::delete('/:order_id' , 'AuthorizationController@getUserLogin')->middleware('jwt');
+    Route::get('' , 'OrderController@getOrderList');
+    Route::get('/{order_id}' , 'OrderController@getOrder');
+    Route::post('checkout' , 'OrderController@checkout');
+    Route::delete('/{order_id}' , 'OrderController@deleteOrder')->middleware('jwt');
 });

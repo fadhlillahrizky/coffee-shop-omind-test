@@ -11,6 +11,13 @@ use Illuminate\Support\Facades\Validator;
 class Product extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'product_name',
+        'image',
+        'description',
+        'price',
+        'stock'
+    ];
 
     public static function addProduct($payload): ResponseEntities
     {
@@ -34,10 +41,10 @@ class Product extends Model
 
         $product = self::create([
             'product_name' => Arr::get($payload, 'product_name'),
-            'image' => Arr::get($payload, 'product_name'),
-            'description' => Arr::get($payload, 'product_name'),
-            'price' => Arr::get($payload, 'product_name'),
-            'stock' => Arr::get($payload, 'product_name'),
+            'image' => Arr::get($payload, 'image'),
+            'description' => Arr::get($payload, 'description'),
+            'price' => Arr::get($payload, 'price'),
+            'stock' => Arr::get($payload, 'stock'),
         ]);
 
         $response->success = true;
@@ -47,7 +54,7 @@ class Product extends Model
         return $response;
     }
 
-    public static function editProduct($productId, $payload): ResponseEntities
+    public static function editProduct($payload, $productId): ResponseEntities
     {
         $response = new ResponseEntities();
 
@@ -69,19 +76,20 @@ class Product extends Model
 
         $product = self::where('id', $productId)->first();
 
-        if ($product === null){
+        if ($product === null) {
             $response->message = 'Product not found';
 
             return $response;
         }
 
-        $product = self::where('id', $productId)->update([
-            'product_name' => Arr::get($payload, 'product_name'),
-            'image' => Arr::get($payload, 'product_name'),
-            'description' => Arr::get($payload, 'product_name'),
-            'price' => Arr::get($payload, 'product_name'),
-            'stock' => Arr::get($payload, 'product_name'),
-        ]);
+        $product = self::where('id', $productId)->first();
+
+        $product->product_name = Arr::get($payload, 'product_name');
+        $product->image = Arr::get($payload, 'image');
+        $product->description = Arr::get($payload, 'description');
+        $product->price = Arr::get($payload, 'price');
+        $product->stock = Arr::get($payload, 'stock');
+        $product->save();
 
         $response->success = true;
         $response->message = 'Edit product success';
@@ -109,7 +117,7 @@ class Product extends Model
 
         $product = self::where('id', $productId)->first();
 
-        if ($product === null){
+        if ($product === null) {
             $response->message = 'Product not found';
 
             return $response;
@@ -128,7 +136,7 @@ class Product extends Model
 
         $product = self::where('id', $productId)->delete();
 
-        if ($product === null){
+        if ($product === 0) {
             $response->message = 'Product not found';
 
             return $response;
