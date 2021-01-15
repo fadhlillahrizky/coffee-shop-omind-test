@@ -17,9 +17,9 @@ class AuthorizationController extends Controller
         $response = new ResponseEntities();
 
         $credentials = $request->only('email', 'password');
-
+        $token = JWTAuth::attempt($credentials);
         try {
-            if (!$token = JWTAuth::attempt($credentials)) {
+            if (!$token) {
                 $response->message = 'Login failed, Token attemp';
                 return $response;
             }
@@ -31,13 +31,14 @@ class AuthorizationController extends Controller
             ];
         }
 
-//        $user = JWTAuth::parseToken()->authenticate();
+        $request->headers->set('authorization','Bearer ' . $token);
+        $user = JWTAuth::parseToken()->authenticate();
 
         $response->success = true;
-        $response->message = 'Detail User';
+        $response->message = 'Login success';
         $response->data = [
             'token' => $token,
-//            'user' => $user
+            'user' => $user
         ];
 
         return $response;

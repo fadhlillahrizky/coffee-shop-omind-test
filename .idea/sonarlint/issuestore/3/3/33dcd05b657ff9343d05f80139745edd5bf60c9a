@@ -1,4 +1,5 @@
 
-d	php:S1142"OReduce the number of returns of this function 4, down to the maximum allowed 3.(À€¶’
-[	php:S1192-"FDefine a constant instead of duplicating this literal "email" 3 times.(øž›†
-^	php:S1192"IDefine a constant instead of duplicating this literal "password" 4 times.(³½â¤
+g	php:S1192"FDefine a constant instead of duplicating this literal "email" 4 times.(¿ÎšÊùÿÿÿÿ8®û¹Ÿð.
+j	php:S1192"IDefine a constant instead of duplicating this literal "password" 4 times.(¿ÎšÊùÿÿÿÿ8®û¹Ÿð.
+m	php:S1192G"LDefine a constant instead of duplicating this literal "Detail User" 3 times.(î—Þ×ÿÿÿÿÿ8®û¹Ÿð.
+k	php:S1142P"OReduce the number of returns of this function 4, down to the maximum allowed 3.(šû¶¥8®û¹Ÿð.
