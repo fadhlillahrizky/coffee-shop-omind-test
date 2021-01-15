@@ -39,3 +39,19 @@ Route::group(['prefix' => 'order'] , function () {
     Route::post('checkout' , 'OrderController@checkout');
     Route::delete('/{order_id}' , 'OrderController@deleteOrder')->middleware('jwt');
 });
+Route::get('storage/{filename}', function ($filename)
+{
+    $path = storage_path('public/' . $filename);
+
+    if (!File::exists($path)) {
+        abort(404);
+    }
+
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    $response = Response::make($file, 200);
+    $response->header("Content-Type", $type);
+
+    return $response;
+});

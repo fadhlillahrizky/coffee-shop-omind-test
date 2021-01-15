@@ -6,7 +6,9 @@ use App\Entities\ResponseEntities;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class Product extends Model
 {
@@ -84,11 +86,11 @@ class Product extends Model
 
         $product = self::where('id', $productId)->first();
 
-        $product->product_name = Arr::get($payload, 'product_name');
-        $product->image = Arr::get($payload, 'image');
-        $product->description = Arr::get($payload, 'description');
-        $product->price = Arr::get($payload, 'price');
-        $product->stock = Arr::get($payload, 'stock');
+        $product->product_name = Arr::get($payload, 'product_name', $product->product_name);
+        $product->image = Arr::get($payload, 'image', $product->image);
+        $product->description = Arr::get($payload, 'description', $product->description);
+        $product->price = Arr::get($payload, 'price', $product->price);
+        $product->stock = Arr::get($payload, 'stock', $product->stock);
         $product->save();
 
         $response->success = true;
@@ -102,7 +104,10 @@ class Product extends Model
     {
         $response = new ResponseEntities();
 
-        $product = self::get();//TODO: add filter and sort
+        $product = self::when(Arr::has($queryString, 'search'), function ($query) use ($queryString) {
+            $query->where('product_name', 'like', "%{$queryString['search']}%");
+        })
+            ->get();//TODO: add filter and sort
 
         $response->success = true;
         $response->message = 'Get product list success';

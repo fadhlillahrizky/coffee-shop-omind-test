@@ -31,13 +31,13 @@ class AuthorizationController extends Controller
             ];
         }
 
-        $user = JWTAuth::parseToken()->authenticate();
+//        $user = JWTAuth::parseToken()->authenticate();
 
         $response->success = true;
         $response->message = 'Detail User';
         $response->data = [
             'token' => $token,
-            'user' => $user
+//            'user' => $user
         ];
 
         return $response;
