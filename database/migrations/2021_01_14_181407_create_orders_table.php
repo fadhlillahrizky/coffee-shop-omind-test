@@ -15,6 +15,9 @@ class CreateOrdersTable extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
+            $table->integer('order_by');
+            $table->integer('table_no');
+            $table->integer('total_price');
             $table->timestamps();
         });
     }
